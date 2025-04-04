@@ -6,7 +6,7 @@ const currentRole = ref(roles[0]);
 let roleIndex = 0;
 
 const stats = [
-    { label: 'Years Experience', value: '3+' },
+    { label: 'Years Experience', value: '1+' },
     { label: 'Projects Completed', value: '20+' },
     { label: 'Happy Clients', value: '15+' },
     { label: 'Technologies', value: '10+' }
