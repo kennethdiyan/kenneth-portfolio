@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { TransitionGroup } from 'vue';
+// import { TransitionGroup } from 'vue';
 
 interface Project {
     title: string;
@@ -204,7 +204,7 @@ onMounted(() => {
             </div>
 
             <!-- Category Filter -->
-            <div ref="categoryFilterRef" class="flex justify-center mb-12 space-x-2 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+            <div ref="categoryFilterRef" class="flex flex-wrap justify-center gap-2 mb-12 opacity-0 translate-y-8 transition-all duration-700 ease-out px-4">
                 <button
                     v-for="category in categories"
                     :key="category.id"
@@ -221,88 +221,90 @@ onMounted(() => {
             </div>
 
             <!-- Projects Grid -->
-            <TransitionGroup
-                name="projects-grid"
-                tag="div"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-                <div v-for="(project, index) in filteredProjects"
-                     :key="project.title"
-                     class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
-                     :style="{ transitionDelay: `${index * 100}ms` }">
-                    <!-- Project Image -->
-                    <div class="relative h-56 overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-br"
-                             :class="[`${getProjectColor(project.color)}/20`]"></div>
-                        <img :src="project.image" :alt="project.title"
-                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-
-                    <!-- Project Info -->
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="px-3 py-1 text-sm rounded-full"
-                                  :class="getProjectBadgeColors(project.color)">
-                                {{ project.category }}
-                            </span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ project.year }}</span>
+            <div class="projects-container">
+                <TransitionGroup
+                    name="projects-grid"
+                    tag="div"
+                    class="projects-grid"
+                >
+                    <div v-for="(project, index) in filteredProjects"
+                         :key="project.title"
+                         class="project-card group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500"
+                         :style="{ transitionDelay: `${index * 100}ms` }">
+                        <!-- Project Image -->
+                        <div class="relative h-48 sm:h-56 overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br"
+                                 :class="[`${getProjectColor(project.color)}/20`]"></div>
+                            <img :src="project.image" :alt="project.title"
+                                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
 
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                            {{ project.title }}
-                        </h3>
-
-                        <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                            {{ project.description }}
-                        </p>
-
-                        <!-- Project Stats -->
-                        <div class="grid grid-cols-3 gap-4 mb-4 py-3 border-y border-gray-100 dark:border-gray-700">
-                            <div v-for="stat in project.stats" :key="stat.label" class="text-center">
-                                <div class="text-lg font-bold text-gray-900 dark:text-white">{{ stat.value }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ stat.label }}</div>
+                        <!-- Project Info -->
+                        <div class="p-4 sm:p-6 flex-grow flex flex-col">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 text-xs sm:text-sm rounded-full"
+                                      :class="getProjectBadgeColors(project.color)">
+                                    {{ project.category }}
+                                </span>
+                                <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{{ project.year }}</span>
                             </div>
-                        </div>
 
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span v-for="tech in project.technologies.slice(0, 3)"
-                                  :key="tech"
-                                  class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md">
-                                {{ tech }}
-                            </span>
-                            <span v-if="project.technologies.length > 3"
-                                  class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md">
-                                +{{ project.technologies.length - 3 }} more
-                            </span>
-                        </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                                {{ project.title }}
+                            </h3>
 
-                        <button @click="openProjectDetails(project)"
-                                class="w-full px-4 py-2 mt-2 text-sm font-medium text-white rounded-lg transition-all duration-300 bg-gradient-to-r"
-                                :class="[getProjectColor(project.color)]">
-                            View Details
-                        </button>
+                            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                                {{ project.description }}
+                            </p>
+
+                            <!-- Project Stats -->
+                            <div class="grid grid-cols-3 gap-2 sm:gap-4 mb-4 py-3 border-y border-gray-100 dark:border-gray-700">
+                                <div v-for="stat in project.stats" :key="stat.label" class="text-center">
+                                    <div class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">{{ stat.value }}</div>
+                                    <div class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">{{ stat.label }}</div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-1 sm:gap-2 mb-4">
+                                <span v-for="tech in project.technologies.slice(0, 3)"
+                                      :key="tech"
+                                      class="px-2 py-1 text-[10px] sm:text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md">
+                                    {{ tech }}
+                                </span>
+                                <span v-if="project.technologies.length > 3"
+                                      class="px-2 py-1 text-[10px] sm:text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md">
+                                    +{{ project.technologies.length - 3 }} more
+                                </span>
+                            </div>
+
+                            <button @click="openProjectDetails(project)"
+                                    class="w-full px-4 py-2 mt-auto text-sm font-medium text-white rounded-lg transition-all duration-300 bg-gradient-to-r"
+                                    :class="[getProjectColor(project.color)]">
+                                View Details
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </TransitionGroup>
+                </TransitionGroup>
+            </div>
         </div>
 
         <!-- Project Details Modal -->
         <div v-if="activeProject"
              class="fixed inset-0 z-50 overflow-y-auto"
              @click="closeModal">
-            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="flex items-end sm:items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Backdrop -->
                 <div class="fixed inset-0 transition-opacity duration-300" aria-hidden="true">
                     <div class="absolute inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm"></div>
                 </div>
 
                 <!-- Modal Panel -->
-                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all duration-300 w-full sm:my-8 sm:align-middle sm:max-w-4xl"
                      :class="isModalOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
                      @click.stop>
                     <div class="relative">
-                        <div class="h-72 overflow-hidden">
+                        <div class="h-48 sm:h-72 overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-br"
                                  :class="[`${getProjectColor(activeProject.color)}/20`]"></div>
                             <img :src="activeProject.image" :alt="activeProject.title"
@@ -312,46 +314,46 @@ onMounted(() => {
 
                         <button @click="closeModal"
                                 class="absolute top-4 right-4 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
 
                         <!-- Project Title Overlay -->
-                        <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
                             <div class="flex items-center gap-3 mb-2">
-                                <span class="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm text-white">
+                                <span class="px-3 py-1 text-xs sm:text-sm rounded-full bg-white/20 backdrop-blur-sm text-white">
                                     {{ activeProject.category }}
                                 </span>
-                                <span class="text-sm opacity-75">{{ activeProject.year }}</span>
+                                <span class="text-xs sm:text-sm opacity-75">{{ activeProject.year }}</span>
                             </div>
-                            <h3 class="text-3xl font-bold">{{ activeProject.title }}</h3>
+                            <h3 class="text-2xl sm:text-3xl font-bold">{{ activeProject.title }}</h3>
                         </div>
                     </div>
 
-                    <div class="px-6 py-8">
+                    <div class="px-4 sm:px-6 py-6 sm:py-8">
                         <!-- Project Stats -->
-                        <div class="grid grid-cols-3 gap-6 mb-8 p-6 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
                             <div v-for="stat in activeProject.stats"
                                  :key="stat.label"
                                  class="text-center">
-                                <div class="text-2xl font-bold text-gray-900 dark:text-white mb-1">{{ stat.value }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ stat.label }}</div>
+                                <div class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1">{{ stat.value }}</div>
+                                <div class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{{ stat.label }}</div>
                             </div>
                         </div>
 
-                        <p class="text-gray-600 dark:text-gray-300 mb-8 text-lg leading-relaxed">
+                        <p class="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 leading-relaxed">
                             {{ activeProject.description }}
                         </p>
 
-                        <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div class="grid sm:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Key Features</h4>
-                                <ul class="space-y-3">
+                                <h4 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Key Features</h4>
+                                <ul class="space-y-2 sm:space-y-3">
                                     <li v-for="feature in activeProject.features"
                                         :key="feature"
-                                        class="flex items-start text-gray-600 dark:text-gray-300">
-                                        <svg class="w-5 h-5 mr-2 text-primary-500 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        class="flex items-start text-sm sm:text-base text-gray-600 dark:text-gray-300">
+                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary-500 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                         </svg>
                                         {{ feature }}
@@ -360,23 +362,23 @@ onMounted(() => {
                             </div>
 
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Technologies Used</h4>
+                                <h4 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Technologies Used</h4>
                                 <div class="flex flex-wrap gap-2">
                                     <span v-for="tech in activeProject.technologies"
                                           :key="tech"
-                                          class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
+                                          class="px-3 py-1 text-xs sm:text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
                                         {{ tech }}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex justify-center">
+                        <div class="flex justify-center pt-4 sm:pt-6">
                             <a :href="activeProject.link"
-                               class="inline-flex items-center px-6 py-3 text-base font-medium text-white rounded-lg transition-all duration-300 transform hover:scale-105 bg-gradient-to-r"
+                               class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-medium text-white rounded-lg transition-all duration-300 transform hover:scale-105 bg-gradient-to-r"
                                :class="[getProjectColor(activeProject.color)]">
                                 Visit Project
-                                <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
                             </a>
@@ -434,8 +436,108 @@ onMounted(() => {
     transform: translateY(20px);
 }
 
-/* Add transition group animations */
-.projects-grid-move,
+/* Update transition group animations */
+.projects-grid-move {
+    transition: transform 0.5s ease-out;
+}
+
+.projects-grid-enter-active,
+.projects-grid-leave-active {
+    transition: all 0.5s ease-out;
+}
+
+.projects-grid-enter-from,
+.projects-grid-leave-to {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+}
+
+.projects-grid-leave-active {
+    position: absolute;
+}
+
+.projects-container {
+    width: 100%;
+    min-height: 200px;
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    justify-content: center;
+}
+
+@media (min-width: 640px) {
+    .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .projects-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.project-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Update modal styles for better mobile experience */
+@media (max-width: 640px) {
+    .sm\:max-w-4xl {
+        max-width: calc(100vw - 2rem);
+        margin: 1rem;
+    }
+
+    .h-72 {
+        height: 200px;
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Enhance transitions */
+.group {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.group:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Improve modal transitions */
+.modal-enter-active,
+.modal-leave-active {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-enter-from,
+.modal-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+/* Update project card animations */
+.projects-grid-move {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .projects-grid-enter-active,
 .projects-grid-leave-active {
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -444,10 +546,11 @@ onMounted(() => {
 .projects-grid-enter-from,
 .projects-grid-leave-to {
     opacity: 0;
-    transform: translateY(30px);
+    transform: scale(0.98) translateY(10px);
 }
 
 .projects-grid-leave-active {
     position: absolute;
 }
 </style>
+
