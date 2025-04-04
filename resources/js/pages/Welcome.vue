@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { onMounted } from 'vue';
-import Navigation from '@/Components/Portfolio/Navigation.vue';
-import Hero from '@/Components/Portfolio/Hero.vue';
-import About from '@/Components/Portfolio/About.vue';
-import Skills from '@/Components/Portfolio/Skills.vue';
-import Projects from '@/Components/Portfolio/Projects.vue';
-import Experience from '@/Components/Portfolio/Experience.vue';
-import Education from '@/Components/Portfolio/Education.vue';
-import Contact from '@/Components/Portfolio/Contact.vue';
-import Footer from '@/Components/Portfolio/Footer.vue';
+import Navigation from '@/components/Portfolio/Navigation.vue';
+import Hero from '@/components/Portfolio/Hero.vue';
+import About from '@/components/Portfolio/About.vue';
+import Skills from '@/components/Portfolio/Skills.vue';
+import Projects from '@/components/Portfolio/Projects.vue';
+import Experience from '@/components/Portfolio/Experience.vue';
+import Education from '@/components/Portfolio/Education.vue';
+import Contact from '@/components/Portfolio/Contact.vue';
+import Footer from '@/components/Portfolio/Footer.vue';
 
 onMounted(() => {
     const observerOptions = {
