@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { TransitionGroup } from 'vue';
 
 interface Project {
     title: string;
@@ -96,7 +97,6 @@ const selectedCategory = ref('all');
 // Add refs for animation
 const sectionRef = ref<HTMLElement | null>(null);
 const headerRef = ref<HTMLElement | null>(null);
-const projectRefs = ref<HTMLElement[]>([]);
 const categoryFilterRef = ref<HTMLElement | null>(null);
 
 const categories = computed(() => {
@@ -171,19 +171,6 @@ onMounted(() => {
         { threshold: 0.1 }
     );
 
-    // Create intersection observer for project cards
-    const projectObserver = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
-                    projectObserver.unobserve(entry.target);
-                }
-            });
-        },
-        { threshold: 0.1 }
-    );
-
     // Observe header
     if (headerRef.value) {
         headerObserver.observe(headerRef.value);
@@ -193,13 +180,6 @@ onMounted(() => {
     if (categoryFilterRef.value) {
         filterObserver.observe(categoryFilterRef.value);
     }
-
-    // Observe project cards
-    projectRefs.value.forEach((ref) => {
-        if (ref) {
-            projectObserver.observe(ref);
-        }
-    });
 });
 </script>
 
@@ -241,11 +221,14 @@ onMounted(() => {
             </div>
 
             <!-- Projects Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <TransitionGroup
+                name="projects-grid"
+                tag="div"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
                 <div v-for="(project, index) in filteredProjects"
                      :key="project.title"
-                     :ref="el => { if (el) projectRefs[index] = el as HTMLElement }"
-                     class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 opacity-0 translate-y-8"
+                     class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
                      :style="{ transitionDelay: `${index * 100}ms` }">
                     <!-- Project Image -->
                     <div class="relative h-56 overflow-hidden">
@@ -301,7 +284,7 @@ onMounted(() => {
                         </button>
                     </div>
                 </div>
-            </div>
+            </TransitionGroup>
         </div>
 
         <!-- Project Details Modal -->
@@ -449,5 +432,22 @@ onMounted(() => {
 .modal-leave-to {
     opacity: 0;
     transform: translateY(20px);
+}
+
+/* Add transition group animations */
+.projects-grid-move,
+.projects-grid-enter-active,
+.projects-grid-leave-active {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.projects-grid-enter-from,
+.projects-grid-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.projects-grid-leave-active {
+    position: absolute;
 }
 </style>
