@@ -3,7 +3,6 @@ import autoprefixer from 'autoprefixer';
 import laravel from 'laravel-vite-plugin';
 import path from 'path';
 import tailwindcss from 'tailwindcss';
-import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -21,20 +20,9 @@ export default defineConfig({
             },
         }),
     ],
-    server: {
-        https: true,
-        hmr: {
-            host: 'localhost'
-        }
-    },
-    build: {
-        manifest: true,
-        outDir: 'public/build',
-    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
-            'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },
     css: {
