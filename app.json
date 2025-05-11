@@ -1,0 +1,47 @@
+{
+  "name": "Kenneth Portfolio",
+  "description": "Kenneth's Portfolio Laravel Application",
+  "keywords": [
+    "laravel",
+    "vue",
+    "portfolio"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/php"
+    }
+  ],
+  "env": {
+    "APP_NAME": {
+      "value": "Kenneth's Portfolio"
+    },
+    "APP_ENV": {
+      "value": "production"
+    },
+    "APP_DEBUG": {
+      "value": "false"
+    },
+    "LOG_CHANNEL": {
+      "value": "errorlog"
+    },
+    "CACHE_DRIVER": {
+      "value": "file"
+    },
+    "SESSION_DRIVER": {
+      "value": "cookie"
+    },
+    "QUEUE_CONNECTION": {
+      "value": "sync"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "addons": []
+}
