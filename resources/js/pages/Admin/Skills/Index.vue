@@ -6,7 +6,7 @@ interface Skill {
     id: number;
     name: string;
     category: string;
-    proficiency: string;
+    proficiency: string | null;
     description: string;
     is_active: boolean;
     created_at: string;
@@ -45,8 +45,13 @@ const deleteSkill = (id: number) => {
     }
 };
 
-const getProficiencyColor = (proficiency: string) => {
-    switch (proficiency.toLowerCase()) {
+const getProficiencyColor = (proficiency: any) => {
+    if (!proficiency || typeof proficiency !== 'string') {
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+
+    const level = String(proficiency).toLowerCase();
+    switch (level) {
         case 'expert': return 'bg-green-100 text-green-800 border-green-200';
         case 'advanced': return 'bg-blue-100 text-blue-800 border-blue-200';
         case 'intermediate': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -215,7 +220,7 @@ const getProficiencyColor = (proficiency: string) => {
                                 </td>
                                 <td class="px-6 py-4">
                                     <span :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border', getProficiencyColor(skill.proficiency)]">
-                                        {{ skill.proficiency }}
+                                        {{ skill.proficiency || 'N/A' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4">

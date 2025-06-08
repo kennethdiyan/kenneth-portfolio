@@ -26,6 +26,7 @@ const submit = () => {
 
 const commonLabels = [
     'Full Name',
+    'Age',
     'Email',
     'Phone',
     'Location',
