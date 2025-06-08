@@ -1,5 +1,30 @@
 <script setup lang="ts">
 import { useScrollAnimation } from '@/composables/useScrollAnimation';
+import { computed } from 'vue';
+
+interface PersonalInfo {
+    id: number;
+    label: string;
+    value: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
+interface ContactInfo {
+    id: number;
+    type: string;
+    label: string;
+    value: string;
+    href: string;
+    icon: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
+const props = defineProps<{
+    personalInfo: PersonalInfo[];
+    contactInfo: ContactInfo[];
+}>();
 
 const highlights = [
     {
@@ -19,14 +44,36 @@ const highlights = [
     }
 ];
 
-const personalInfo = [
-    { label: 'Name', value: 'Kenneth John C. Ribay' },
-    { label: 'Age', value: '23 years old' },
-    { label: 'Location', value: 'Philippines' },
-    { label: 'Experience', value: '1+ Years' },
-    { label: 'Languages', value: 'English, Filipino' },
-    { label: 'Availability', value: 'Open to opportunities' }
-];
+// Get personal information from database
+const personalInfoDisplay = computed(() => {
+    const dbInfo = props.personalInfo.filter(info => info.is_active).sort((a, b) => a.sort_order - b.sort_order);
+
+    if (dbInfo.length > 0) {
+        return dbInfo.map(info => ({
+            label: info.label,
+            value: info.value
+        }));
+    }
+
+    // Fallback to default
+    return [
+        { label: 'Name', value: 'Kenneth John C. Ribay' },
+        { label: 'Age', value: '23 years old' },
+        { label: 'Location', value: 'Philippines' },
+        { label: 'Experience', value: '1+ Years' },
+        { label: 'Languages', value: 'English, Filipino' },
+        { label: 'Availability', value: 'Open to opportunities' }
+    ];
+});
+
+const aboutDescription = computed(() => {
+    return props.personalInfo.find(info =>
+        info.label.toLowerCase() === 'about' ||
+        info.label.toLowerCase() === 'description' ||
+        info.label.toLowerCase() === 'bio'
+    )?.value ||
+    "I'm a passionate full-stack developer with expertise in Laravel and Vue.js. I enjoy creating clean, efficient solutions that solve real-world problems and enhance user experiences.";
+});
 
 // Setup scroll-triggered animations
 useScrollAnimation([
@@ -96,14 +143,13 @@ useScrollAnimation([
                             Personal Information
                         </h3>
                         <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed">
-                            I'm a passionate full-stack developer with expertise in Laravel and Vue.js. I enjoy creating
-                            clean, efficient solutions that solve real-world problems and enhance user experiences.
+                            {{ aboutDescription }}
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
                         <div
-                            v-for="(info, index) in personalInfo"
+                            v-for="(info, index) in personalInfoDisplay"
                             :key="info.label"
                             class="personal-info-card bg-slate-900/50 backdrop-blur border border-slate-800 rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 md:p-6 hover:border-cyan-500/50 transition-all duration-300 group opacity-0 transform translate-y-[20px]"
                         >

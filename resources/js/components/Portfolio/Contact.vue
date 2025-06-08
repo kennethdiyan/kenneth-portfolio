@@ -1,6 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useScrollAnimation } from '@/composables/useScrollAnimation';
+
+interface ContactInfo {
+    id: number;
+    type: string;
+    label: string;
+    value: string;
+    href: string;
+    icon: string;
+    is_active: boolean;
+    sort_order: number;
+}
+
+const props = defineProps<{
+    contactInfo: ContactInfo[];
+}>();
 
 const form = ref({
     firstName: '',
@@ -13,26 +28,12 @@ const form = ref({
 const isSubmitting = ref(false);
 const submitStatus = ref<'success' | 'error' | null>(null);
 
-const contactInfo = [
-    {
-        title: 'Email',
-        value: 'kennethjohnribay@gmail.com',
-        href: 'mailto:kennethjohnribay@gmail.com',
-        icon: 'email'
-    },
-    {
-        title: 'Phone',
-        value: '+63 916 551 7358',
-        href: 'tel:+639165517358',
-        icon: 'phone'
-    },
-    {
-        title: 'Location',
-        value: 'Camarines Sur, Philippines',
-        href: '#',
-        icon: 'location'
-    }
-];
+// Filter and sort active contact info
+const activeContactInfo = computed(() => {
+    return props.contactInfo
+        .filter(contact => contact.is_active)
+        .sort((a, b) => a.sort_order - b.sort_order);
+});
 
 const socialLinks = [
     {
@@ -56,9 +57,15 @@ const getContactIcon = (iconType: string) => {
     const icons: Record<string, string> = {
         email: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`,
         phone: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>`,
-        location: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`
+        location: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`,
+        envelope: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`,
+        'map-pin': `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`,
+        globe: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.559-.499-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.559.499.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.497-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd"></path></svg>`,
+        user: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>`,
+        home: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>`,
+        briefcase: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2zm4-1a1 1 0 00-1 1v1h2V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`
     };
-    return icons[iconType] || '';
+    return icons[iconType] || icons.envelope;
 };
 
 const getSocialIcon = (iconType: string) => {
@@ -268,8 +275,8 @@ useScrollAnimation([
 
                     <div class="space-y-4 sm:space-y-6">
                         <div
-                            v-for="(info, index) in contactInfo"
-                            :key="info.title"
+                            v-for="(info, index) in activeContactInfo"
+                            :key="info.label"
                             class="contact-info-card group bg-slate-900/30 backdrop-blur border border-slate-800/50 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:bg-slate-900/50 hover:border-cyan-500/50 transition-all duration-300 opacity-0 transform translate-y-[20px]"
                         >
                             <a :href="info.href" class="flex items-center gap-3 sm:gap-4 md:gap-6">
@@ -278,7 +285,7 @@ useScrollAnimation([
                                 </div>
                                 <div>
                                     <h4 class="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white group-hover:text-cyan-400 transition-colors duration-300">
-                                        {{ info.title }}
+                                        {{ info.label }}
                                     </h4>
                                     <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400">{{ info.value }}</p>
                                 </div>
@@ -292,12 +299,12 @@ useScrollAnimation([
                         <div class="flex gap-3 sm:gap-4 md:gap-6">
                             <a
                                 v-for="social in socialLinks"
-                                :key="social.name"
-                                :href="social.url"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                               :key="social.name"
+                               :href="social.url"
+                               target="_blank"
+                               rel="noopener noreferrer"
                                 class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl lg:rounded-2xl hover:border-cyan-500/50 hover:bg-slate-700/50 transition-all duration-300 hover:scale-110"
-                                :title="social.name"
+                               :title="social.name"
                             >
                                 <div class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 text-gray-300 hover:text-cyan-400 transition-colors duration-300" v-html="getSocialIcon(social.icon)"></div>
                             </a>

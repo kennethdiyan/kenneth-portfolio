@@ -2,74 +2,71 @@
 import { ref, computed } from 'vue';
 import { useScrollAnimation } from '@/composables/useScrollAnimation';
 
+interface Skill {
+    id: number;
+    name: string;
+    category: string;
+    proficiency: string;
+    description: string;
+    is_active: boolean;
+}
+
+const props = defineProps<{
+    skills: Skill[];
+}>();
+
 const selectedCategory = ref('all');
 
-const categories = ['all', 'frontend', 'backend', 'database', 'tools'];
+// Get unique categories from the database skills
+const categories = computed(() => {
+    const uniqueCategories = ['all'];
+    const skillCategories = [...new Set(props.skills.map(skill => skill.category.toLowerCase()))];
+    return uniqueCategories.concat(skillCategories);
+});
 
-const skills = [
-    {
-        name: 'Laravel',
-        category: 'backend',
-        level: 90,
-        color: '#FF2D20',
-        description: 'Powerful PHP framework for building robust web applications with elegant syntax.'
-    },
-    {
-        name: 'Vue.js',
-        category: 'frontend',
-        level: 85,
-        color: '#4FC08D',
-        description: 'Progressive JavaScript framework for building user interfaces and single-page applications.'
-    },
-    {
-        name: 'Tailwind CSS',
-        category: 'frontend',
-        level: 88,
-        color: '#06B6D4',
-        description: 'Utility-first CSS framework for rapidly building custom user interfaces.'
-    },
-    {
-        name: 'MySQL',
-        category: 'database',
-        level: 82,
-        color: '#4479A1',
-        description: 'Reliable relational database management system for storing and managing data.'
-    },
-    {
-        name: 'JavaScript',
-        category: 'frontend',
-        level: 80,
-        color: '#F7DF1E',
-        description: 'Dynamic programming language for interactive web development and modern applications.'
-    },
-    {
-        name: 'PHP',
-        category: 'backend',
-        level: 85,
-        color: '#777BB4',
-        description: 'Server-side scripting language for web development and backend applications.'
-    },
-    {
-        name: 'Git',
-        category: 'tools',
-        level: 75,
-        color: '#F05032',
-        description: 'Version control system for tracking changes and collaborating on code projects.'
-    },
-    {
-        name: 'Inertia.js',
-        category: 'frontend',
-        level: 78,
-        color: '#9333EA',
-        description: 'Modern monolith approach for building single-page applications with server-side routing.'
+// Convert proficiency levels to numbers for progress bars
+const getProficiencyLevel = (proficiency: string | null | undefined): number => {
+    if (!proficiency || typeof proficiency !== 'string') {
+        return 50; // Default to intermediate level
     }
-];
+    const levels: Record<string, number> = {
+        'beginner': 25,
+        'intermediate': 50,
+        'advanced': 75,
+        'expert': 90
+    };
+    return levels[proficiency.toLowerCase()] || 50;
+};
+
+// Get color for each skill based on category
+const getSkillColor = (category: string): string => {
+    const colors: Record<string, string> = {
+        'frontend': '#4FC08D',
+        'backend': '#FF2D20',
+        'database': '#4479A1',
+        'devops': '#F05032',
+        'mobile': '#61DAFB',
+        'other': '#9333EA'
+    };
+    return colors[category.toLowerCase()] || '#06B6D4';
+};
+
+// Transform database skills to match component format
+const transformedSkills = computed(() => {
+    return props.skills.map(skill => ({
+        name: skill.name,
+        category: skill.category.toLowerCase(),
+        level: getProficiencyLevel(skill.proficiency),
+        color: getSkillColor(skill.category),
+        description: skill.description || `Professional experience with ${skill.name} at ${skill.proficiency} level.`
+    }));
+});
 
 const filteredSkills = computed(() => {
     if (selectedCategory.value === 'all') {
-        return skills;
+        return transformedSkills.value;
     }
-    return skills.filter(skill => skill.category === selectedCategory.value);
+    return transformedSkills.value.filter(skill => skill.category === selectedCategory.value);
 });
 
 const getSkillIcon = (skillName: string) => {
@@ -139,7 +136,7 @@ useScrollAnimation([
                         ]"
                     >
                         {{ category }}
-                    </button>
+                </button>
                 </div>
             </div>
 
@@ -147,7 +144,7 @@ useScrollAnimation([
             <div class="skills-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8 lg:gap-10 opacity-0 transform translate-y-[50px]">
                 <div
                     v-for="(skill, index) in filteredSkills"
-                    :key="skill.name"
+                     :key="skill.name"
                     class="skill-card group relative bg-slate-800/30 backdrop-blur border border-slate-700/50 rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-10 hover:bg-slate-800/50 hover:border-slate-600/50 transition-all duration-300 hover:transform hover:scale-105 opacity-0 transform translate-y-[30px]"
                 >
                     <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-600/5 rounded-xl sm:rounded-2xl lg:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -160,7 +157,7 @@ useScrollAnimation([
                                 :style="{ backgroundColor: skill.color + '20', color: skill.color }"
                             >
                                 <div class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10" v-html="getSkillIcon(skill.name)"></div>
-                            </div>
+                    </div>
                             <div>
                                 <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300">
                                     {{ skill.name }}
@@ -174,7 +171,7 @@ useScrollAnimation([
                             <div class="flex justify-between items-center mb-2 sm:mb-3">
                                 <span class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-300">Proficiency</span>
                                 <span class="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-cyan-400">{{ skill.level }}%</span>
-                            </div>
+                                </div>
                             <div class="w-full bg-slate-700/50 rounded-full h-2 sm:h-3 md:h-4 overflow-hidden">
                                 <div
                                     class="skill-progress h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all duration-1000 ease-out"

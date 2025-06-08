@@ -1,21 +1,60 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useScrollAnimation } from '@/composables/useScrollAnimation';
 
-const currentRole = ref('');
-const roles = [
-    'Full Stack Developer',
-    'Laravel Specialist',
-    'Vue.js Developer',
-    'Web Developer'
-];
+interface PersonalInfo {
+    id: number;
+    label: string;
+    value: string;
+    is_active: boolean;
+    sort_order: number;
+}
 
-const stats = [
-    { value: '1+', label: 'Years' },
-    { value: '10+', label: 'Projects' },
-    { value: '3+', label: 'Technologies' },
-    { value: '100%', label: 'Dedication' }
-];
+const props = defineProps<{
+    personalInfo: PersonalInfo[];
+}>();
+
+const currentRole = ref('');
+
+// Get roles from database or fallback to default
+const roles = computed(() => {
+    const rolesFromDb = props.personalInfo.find(info => info.label.toLowerCase() === 'roles')?.value;
+    if (rolesFromDb) {
+        return rolesFromDb.split(',').map(role => role.trim());
+    }
+    return [
+        'Full Stack Developer',
+        'Laravel Specialist',
+        'Vue.js Developer',
+        'Web Developer'
+    ];
+});
+
+// Get stats from database
+const stats = computed(() => {
+    const experience = props.personalInfo.find(info => info.label.toLowerCase() === 'experience')?.value || '1+';
+    const projectsCount = props.personalInfo.find(info => info.label.toLowerCase() === 'projects')?.value || '10+';
+    const technologies = props.personalInfo.find(info => info.label.toLowerCase() === 'technologies')?.value || '3+';
+
+    return [
+        { value: experience.includes('Year') ? experience.split(' ')[0] + '+' : experience, label: 'Years' },
+        { value: projectsCount, label: 'Projects' },
+        { value: technologies, label: 'Technologies' },
+        { value: '100%', label: 'Dedication' }
+    ];
+});
+
+// Get personal info for display
+const fullName = computed(() => {
+    const firstName = props.personalInfo.find(info => info.label.toLowerCase() === 'first name')?.value || 'Kenneth John';
+    const lastName = props.personalInfo.find(info => info.label.toLowerCase() === 'last name')?.value || 'C. Ribay';
+    return { firstName, lastName };
+});
+
+const description = computed(() => {
+    return props.personalInfo.find(info => info.label.toLowerCase() === 'description' || info.label.toLowerCase() === 'bio')?.value ||
+           'Passionate about creating efficient and user-friendly web applications. Specialized in Laravel, Vue.js, and modern web technologies.';
+});
 
 const socialLinks = [
     {
@@ -109,11 +148,12 @@ useScrollAnimation([
 
 onMounted(() => {
     let currentIndex = 0;
-    typeRole(roles[currentIndex]);
+    const rolesList = roles.value;
+    typeRole(rolesList[currentIndex]);
 
     setInterval(() => {
-        currentIndex = (currentIndex + 1) % roles.length;
-        typeRole(roles[currentIndex]);
+        currentIndex = (currentIndex + 1) % rolesList.length;
+        typeRole(rolesList[currentIndex]);
     }, 3000);
 });
 </script>
@@ -133,8 +173,8 @@ onMounted(() => {
                             </div>
 
                             <h1 class="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight opacity-0 transform translate-y-[30px]">
-                                <span class="block text-white">Kenneth John</span>
-                                <span class="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">C. Ribay</span>
+                                <span class="block text-white">{{ fullName.firstName }}</span>
+                                <span class="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">{{ fullName.lastName }}</span>
                             </h1>
 
                             <div class="hero-role h-8 sm:h-10 md:h-12 lg:h-14 opacity-0">
@@ -146,8 +186,7 @@ onMounted(() => {
                         </div>
 
                         <p class="hero-description text-sm sm:text-base md:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed text-gray-400 opacity-0 transform translate-y-[20px]">
-                            Passionate about creating efficient and user-friendly web applications.
-                            Specialized in Laravel, Vue.js, and modern web technologies.
+                            {{ description }}
                         </p>
 
                         <div class="hero-stats grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 opacity-0 transform translate-y-[30px]">

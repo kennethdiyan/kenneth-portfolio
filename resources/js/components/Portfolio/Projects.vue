@@ -1,76 +1,52 @@
 <script setup lang="ts">
 import { useScrollAnimation } from '@/composables/useScrollAnimation';
+import { computed } from 'vue';
 
-const projects = [
-    {
-        title: 'E-Commerce Platform',
-        description: 'A modern e-commerce platform built with Laravel and Vue.js featuring user authentication, product management, shopping cart, and payment integration.',
-        image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&crop=center',
-        technologies: ['Laravel', 'Vue.js', 'Tailwind CSS', 'MySQL'],
-        features: [
-            'User Authentication & Authorization',
-            'Product Management System',
-            'Shopping Cart & Checkout',
-            'Payment Gateway Integration',
-            'Order Management',
-            'Admin Dashboard'
-        ],
-        link: '#',
-        github: '#',
-        status: 'Completed'
-    },
-    {
-        title: 'Task Management System',
-        description: 'A comprehensive task management application with real-time updates, team collaboration features, and project tracking capabilities.',
-        image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=400&fit=crop&crop=center',
-        technologies: ['Laravel', 'Livewire', 'Alpine.js', 'MySQL'],
-        features: [
-            'Real-time Task Updates',
-            'Team Collaboration',
-            'Project Timeline',
-            'File Attachments',
-            'Progress Tracking',
-            'Notifications'
-        ],
-        link: '#',
-        github: '#',
-        status: 'In Progress'
-    },
-    {
-        title: 'Portfolio Website',
-        description: 'A responsive portfolio website showcasing projects and skills with modern animations and interactive elements.',
-        image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&h=400&fit=crop&crop=center',
-        technologies: ['Vue.js', 'Tailwind CSS', 'Framer Motion'],
-        features: [
-            'Responsive Design',
-            'Interactive Animations',
-            'Contact Form',
-            'Project Showcase',
-            'Skills Section',
-            'Modern UI/UX'
-        ],
-        link: '#',
-        github: '#',
-        status: 'Completed'
-    },
-    {
-        title: 'Government Portal',
-        description: 'A comprehensive government portal for citizen services with document management and online service requests.',
-        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&h=400&fit=crop&crop=center',
-        technologies: ['Laravel', 'Vue.js', 'MySQL', 'Redis'],
-        features: [
-            'Citizen Registration',
-            'Document Management',
-            'Service Requests',
-            'Online Payments',
-            'Admin Dashboard',
-            'Reporting System'
-        ],
-        link: '#',
-        github: '#',
-        status: 'Completed'
+interface Project {
+    id: number;
+    title: string;
+    description: string;
+    technologies: string[] | string;
+    github_url: string;
+    live_url: string;
+    image_url: string;
+    is_featured: boolean;
+    is_active: boolean;
+    sort_order: number;
+}
+
+const props = defineProps<{
+    projects: Project[];
+}>();
+
+// Helper function to safely parse technologies
+const parseTechnologies = (technologies: string[] | string): string[] => {
+    if (Array.isArray(technologies)) {
+        return technologies;
     }
-];
+
+    if (typeof technologies === 'string') {
+        try {
+            const parsed = JSON.parse(technologies);
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return technologies.split(',').map(tech => tech.trim()).filter(Boolean);
+        }
+    }
+
+    return [];
+};
+
+// Filter and sort active projects with proper technology parsing
+const activeProjects = computed(() => {
+    return props.projects
+        .filter(project => project.is_active)
+        .map(project => ({
+            ...project,
+            technologies: parseTechnologies(project.technologies)
+        }))
+        .sort((a, b) => a.sort_order - b.sort_order);
+});
 
 // Setup scroll-triggered animations
 useScrollAnimation([
@@ -100,10 +76,14 @@ useScrollAnimation([
                 </p>
             </div>
 
-            <div class="space-y-8 sm:space-y-12 lg:space-y-16">
+            <div v-if="activeProjects.length === 0" class="text-center py-12">
+                <p class="text-gray-400 text-lg">No projects available at the moment.</p>
+            </div>
+
+            <div v-else class="space-y-8 sm:space-y-12 lg:space-y-16">
                 <div
-                    v-for="(project, index) in projects"
-                    :key="project.title"
+                    v-for="(project, index) in activeProjects"
+                    :key="project.id"
                     class="project-card group relative opacity-0 transform translate-y-[50px]"
                 >
                     <div
@@ -119,20 +99,13 @@ useScrollAnimation([
                         ]">
                             <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-xl sm:rounded-2xl lg:rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
                             <img
-                                :src="project.image"
+                                :src="project.image_url || 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop&crop=center'"
                                 :alt="project.title"
                                 class="w-full h-64 sm:h-80 lg:h-96 object-cover"
                             />
-                            <div class="absolute top-4 right-4 z-20">
-                                <span
-                                    :class="[
-                                        'px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium',
-                                        project.status === 'Completed'
-                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                            : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                                    ]"
-                                >
-                                    {{ project.status }}
+                            <div v-if="project.is_featured" class="absolute top-4 right-4 z-20">
+                                <span class="px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                                    Featured
                                 </span>
                             </div>
                         </div>
@@ -152,7 +125,7 @@ useScrollAnimation([
                             </div>
 
                             <!-- Technologies -->
-                            <div class="flex flex-wrap gap-2 sm:gap-3">
+                            <div v-if="project.technologies.length > 0" class="flex flex-wrap gap-2 sm:gap-3">
                                 <span
                                     v-for="tech in project.technologies"
                                     :key="tech"
@@ -162,27 +135,13 @@ useScrollAnimation([
                                 </span>
                             </div>
 
-                            <!-- Features -->
-                            <div class="space-y-2 sm:space-y-3">
-                                <h4 class="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white">Key Features:</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                                    <div
-                                        v-for="feature in project.features"
-                                        :key="feature"
-                                        class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm md:text-base text-gray-300"
-                                    >
-                                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        {{ feature }}
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Action Buttons -->
                             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 lg:gap-6 pt-2 sm:pt-4">
                                 <a
-                                    :href="project.link"
+                                    v-if="project.live_url"
+                                    :href="project.live_url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     class="group inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 text-sm sm:text-base lg:text-lg"
                                 >
                                     <span>View Project</span>
@@ -191,12 +150,15 @@ useScrollAnimation([
                                     </svg>
                                 </a>
                                 <a
-                                    :href="project.github"
+                                    v-if="project.github_url"
+                                    :href="project.github_url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     class="group inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 border border-slate-700 rounded-full text-white font-semibold hover:border-cyan-500 hover:bg-slate-900/50 transition-all duration-300 text-sm sm:text-base lg:text-lg"
                                 >
                                     <span>View Code</span>
                                     <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.237 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                                     </svg>
                                 </a>
                             </div>
