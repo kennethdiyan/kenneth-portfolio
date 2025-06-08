@@ -1,119 +1,197 @@
 <script setup lang="ts">
-interface ContactInfo {
-    icon: string;
-    value: string;
-    link?: string;
-}
+import { useScrollAnimation } from '@/composables/useScrollAnimation';
 
-const contactInfo: ContactInfo[] = [
+const highlights = [
     {
-        icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>`,
-        value: '054, Zone 6, San Jose, Pili, 4418, Camarines Sur'
+        title: 'Problem Solver',
+        description: 'I love tackling complex challenges and finding elegant solutions that work.',
+        icon: '🧩'
     },
     {
-        icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-              </svg>`,
-        value: '09165517358 / 09107872578',
-        link: 'tel:09165517358'
+        title: 'Detail-Oriented',
+        description: 'Every pixel, every line of code matters to create exceptional user experiences.',
+        icon: '🎯'
     },
     {
-        icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>`,
-        value: 'kennethjohnribay@gmail.com',
-        link: 'mailto:kennethjohnribay@gmail.com'
+        title: 'Continuous Learner',
+        description: 'Technology evolves fast, and I make sure to stay ahead of the curve.',
+        icon: '📚'
     }
 ];
+
+const personalInfo = [
+    { label: 'Name', value: 'Kenneth John C. Ribay' },
+    { label: 'Age', value: '23 years old' },
+    { label: 'Location', value: 'Philippines' },
+    { label: 'Experience', value: '1+ Years' },
+    { label: 'Languages', value: 'English, Filipino' },
+    { label: 'Availability', value: 'Open to opportunities' }
+];
+
+// Setup scroll-triggered animations
+useScrollAnimation([
+    {
+        selector: '.about-header',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8 }
+    },
+    {
+        selector: '.about-personal',
+        animation: { opacity: 1, x: 0 },
+        options: { duration: 0.8, delay: 0.2 }
+    },
+    {
+        selector: '.about-highlights',
+        animation: { opacity: 1, x: 0 },
+        options: { duration: 0.8, delay: 0.4 }
+    },
+    {
+        selector: '.personal-info-card',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6 },
+        staggerDelay: 0.1
+    },
+    {
+        selector: '.about-connect-btn',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6, delay: 0.8 }
+    },
+    {
+        selector: '.highlight-card',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6 },
+        staggerDelay: 0.1
+    },
+    {
+        selector: '.about-journey',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8, delay: 0.2 }
+    },
+    {
+        selector: '.journey-card',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6 },
+        staggerDelay: 0.1
+    }
+]);
 </script>
 
 <template>
-    <section id="about" class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <!-- Main Background -->
-        <div class="absolute inset-0 bg-gradient-to-br from-white via-purple-50 to-indigo-50 dark:from-gray-900 dark:via-purple-900/10 dark:to-indigo-900/10"></div>
-
-        <!-- Animated Background Shapes -->
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- Gradient Orbs -->
-            <div class="absolute top-1/4 -left-10 w-72 h-72 bg-purple-200/30 dark:bg-purple-900/20 rounded-full mix-blend-multiply dark:mix-blend-soft-light blur-3xl animate-blob"></div>
-            <div class="absolute -top-4 -right-10 w-72 h-72 bg-indigo-200/30 dark:bg-indigo-900/20 rounded-full mix-blend-multiply dark:mix-blend-soft-light blur-3xl animate-blob animation-delay-2000"></div>
-            <div class="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-200/30 dark:bg-pink-900/20 rounded-full mix-blend-multiply dark:mix-blend-soft-light blur-3xl animate-blob animation-delay-4000"></div>
-        </div>
-
-        <!-- Grid Pattern Overlay -->
-        <div class="absolute inset-0 bg-grid-gray-100 dark:bg-grid-gray-800 opacity-[0.15]"></div>
-
-        <div class="relative max-w-7xl mx-auto">
-            <!-- Section Title with enhanced styling -->
-            <div class="text-center mb-16 relative">
-                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">About Me</h2>
-                <div class="w-20 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full"></div>
+    <section id="about" class="py-12 sm:py-16 lg:py-20 bg-slate-950 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="about-header text-center mb-12 sm:mb-16 lg:mb-20 opacity-0 transform translate-y-[30px]">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+                    About <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Me</span>
+                </h2>
+                <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">
+                    Get to know more about me, my background, and what drives my passion for development
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <!-- Content Column -->
-                <div class="order-2 lg:order-1 space-y-8">
-                    <!-- About Text -->
-                    <div class="prose prose-lg dark:prose-invert">
-                        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                            Hardworking and detail-oriented Web Developer with experience in building and maintaining web applications and management systems. Skilled in Laravel, Vue.js, and Tailwind CSS, with a strong focus on creating efficient and user-friendly software.
-                        </p>
-                        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
-                            Experienced in handling multiple projects independently, including POS systems, inventory management, and assessment tools. Passionate about solving problems, improving workflows, and continuously learning new technologies.
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 xl:gap-20">
+                <!-- Personal Information -->
+                <div class="about-personal space-y-6 sm:space-y-8 lg:space-y-10 opacity-0 transform translate-x-[-50px]">
+                    <div class="space-y-4 sm:space-y-6">
+                        <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                            Personal Information
+                        </h3>
+                        <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed">
+                            I'm a passionate full-stack developer with expertise in Laravel and Vue.js. I enjoy creating
+                            clean, efficient solutions that solve real-world problems and enhance user experiences.
                         </p>
                     </div>
 
-                    <!-- Contact Information -->
-                    <div class="bg-white dark:bg-gray-700 rounded-2xl p-6 shadow-lg">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Contact Information</h3>
-                        <div class="space-y-4">
-                            <div v-for="(info, index) in contactInfo"
-                                 :key="index"
-                                 class="flex items-start space-x-4 group">
-                                <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800 transition-colors duration-300"
-                                     v-html="info.icon">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+                        <div
+                            v-for="(info, index) in personalInfo"
+                            :key="info.label"
+                            class="personal-info-card bg-slate-900/50 backdrop-blur border border-slate-800 rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 md:p-6 hover:border-cyan-500/50 transition-all duration-300 group opacity-0 transform translate-y-[20px]"
+                        >
+                            <div class="text-xs sm:text-sm md:text-base text-gray-500 mb-1 sm:mb-2">{{ info.label }}</div>
+                            <div class="text-sm sm:text-base md:text-lg lg:text-xl font-semibold text-white group-hover:text-cyan-400 transition-colors duration-300">{{ info.value }}</div>
+                        </div>
+                    </div>
+
+                    <div class="about-connect-btn pt-4 sm:pt-6 lg:pt-8 opacity-0 transform translate-y-[20px]">
+                        <a
+                            href="#contact"
+                            class="inline-flex items-center gap-2 sm:gap-3 px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 text-sm sm:text-base lg:text-lg"
+                        >
+                            <span>Let's Connect</span>
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Highlights -->
+                <div class="about-highlights space-y-6 sm:space-y-8 lg:space-y-10 opacity-0 transform translate-x-[50px]">
+                    <div class="space-y-4 sm:space-y-6">
+                        <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
+                            What Makes Me Different
+                        </h3>
+                        <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed">
+                            Here are some key qualities that define my approach to development and problem-solving.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4 sm:space-y-6 lg:space-y-8">
+                        <div
+                            v-for="(highlight, index) in highlights"
+                            :key="highlight.title"
+                            class="highlight-card group relative bg-slate-900/30 backdrop-blur border border-slate-800/50 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:bg-slate-900/50 hover:border-cyan-500/50 transition-all duration-300 opacity-0 transform translate-y-[30px]"
+                        >
+                            <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-600/5 rounded-lg sm:rounded-xl lg:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                            <div class="relative z-10 flex items-start gap-3 sm:gap-4 md:gap-6">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-lg sm:rounded-xl flex items-center justify-center text-xl sm:text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-300">
+                                    {{ highlight.icon }}
                                 </div>
-                                <div class="flex-grow">
-                                    <a v-if="info.link"
-                                       :href="info.link"
-                                       class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-300">
-                                        {{ info.value }}
-                                    </a>
-                                    <div v-else class="text-gray-700 dark:text-gray-300">{{ info.value }}</div>
+                                <div class="flex-1">
+                                    <h4 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300 mb-2 sm:mb-3">
+                                        {{ highlight.title }}
+                                    </h4>
+                                    <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed">
+                                        {{ highlight.description }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Image Column -->
-                <div class="order-1 lg:order-2">
-                    <div class="relative max-w-lg mx-auto">
-                        <!-- Background Pattern -->
-                        <div class="absolute inset-4 -z-10">
-                            <div class="absolute inset-0 bg-gradient-to-tr from-purple-100 to-indigo-100 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-3xl"></div>
-                            <div class="absolute inset-0 bg-grid-purple opacity-30 dark:opacity-20"></div>
+            <!-- Journey Section -->
+            <div class="about-journey mt-12 sm:mt-16 lg:mt-20 text-center opacity-0 transform translate-y-[50px]">
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
+                        My <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Journey</span>
+                    </h3>
+                    <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed mb-6 sm:mb-8 lg:mb-10">
+                        My journey in web development started with curiosity and has evolved into a passion for creating
+                        meaningful digital experiences. Every project teaches me something new, and I believe that
+                        continuous learning is the key to staying relevant in this ever-evolving field.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                        <div class="journey-card bg-slate-900/50 backdrop-blur border border-slate-800 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:border-cyan-500/50 transition-all duration-300 group opacity-0 transform translate-y-[20px]">
+                            <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">2022</div>
+                            <div class="text-sm sm:text-base md:text-lg text-white font-semibold mb-1 sm:mb-2">Started Journey</div>
+                            <div class="text-xs sm:text-sm md:text-base text-gray-400">Began learning web development</div>
                         </div>
 
-                        <!-- Main Container with Purple Border -->
-                        <div class="relative rounded-2xl p-1 bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-500">
-                            <!-- Image Container -->
-                            <div class="relative rounded-xl overflow-hidden bg-white dark:bg-gray-800">
-                                <img src="/images/kenneth-profile.jpg"
-                                     alt="Kenneth John C. Ribay"
-                                     class="w-full h-[480px] object-cover object-center transform hover:scale-105 transition-transform duration-500">
-                            </div>
+                        <div class="journey-card bg-slate-900/50 backdrop-blur border border-slate-800 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:border-cyan-500/50 transition-all duration-300 group opacity-0 transform translate-y-[20px]">
+                            <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">2023</div>
+                            <div class="text-sm sm:text-base md:text-lg text-white font-semibold mb-1 sm:mb-2">First Projects</div>
+                            <div class="text-xs sm:text-sm md:text-base text-gray-400">Built initial web applications</div>
                         </div>
 
-                        <!-- Decorative Elements -->
-                        <div class="absolute -bottom-2 -right-2 w-28 h-28 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full opacity-20 blur-lg"></div>
-                        <div class="absolute -top-2 -left-2 w-28 h-28 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full opacity-20 blur-lg"></div>
-
-                        <!-- Corner Accent -->
-                        <div class="absolute -top-1 -right-1 w-4 h-4 bg-purple-500 rounded-full"></div>
+                        <div class="journey-card bg-slate-900/50 backdrop-blur border border-slate-800 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:border-cyan-500/50 transition-all duration-300 group opacity-0 transform translate-y-[20px]">
+                            <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">2024</div>
+                            <div class="text-sm sm:text-base md:text-lg text-white font-semibold mb-1 sm:mb-2">Growing Expertise</div>
+                            <div class="text-xs sm:text-sm md:text-base text-gray-400">Specializing in Laravel & Vue.js</div>
+                        </div>
                     </div>
                 </div>
             </div>

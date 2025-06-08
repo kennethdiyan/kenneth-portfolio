@@ -1,203 +1,308 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useScrollAnimation } from '@/composables/useScrollAnimation';
 
-interface ContactInfo {
-    icon: string;
-    label: string;
-    value: string;
-    link?: string;
-}
+const form = ref({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: ''
+});
 
-const contactInfo: ContactInfo[] = [
+const isSubmitting = ref(false);
+const submitStatus = ref<'success' | 'error' | null>(null);
+
+const contactInfo = [
     {
-        icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-               </svg>`,
-        label: 'Location',
-        value: 'San Jose, Pili, Camarines Sur, Philippines'
+        title: 'Email',
+        value: 'kennethjohnribay@gmail.com',
+        href: 'mailto:kennethjohnribay@gmail.com',
+        icon: 'email'
     },
     {
-        icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-               </svg>`,
-        label: 'Email',
-        value: 'kennethjohnribay@gmail.com',
-        link: 'mailto:kennethjohnribay@gmail.com'
+        title: 'Phone',
+        value: '+63 916 551 7358',
+        href: 'tel:+639165517358',
+        icon: 'phone'
+    },
+    {
+        title: 'Location',
+        value: 'Camarines Sur, Philippines',
+        href: '#',
+        icon: 'location'
     }
 ];
 
 const socialLinks = [
     {
         name: 'GitHub',
-        url: 'https://github.com/kennethribay',
-        icon: `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
-               </svg>`,
-        color: 'text-[#2DA44E]',
-        hoverBg: 'hover:bg-[#2DA44E]/10'
+        url: 'https://github.com/kennethjohnribay',
+        icon: 'github'
     },
     {
         name: 'LinkedIn',
-        url: 'https://www.linkedin.com/in/kenneth-john-ribay/',
-        icon: `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-               </svg>`,
-        color: 'text-[#0A66C2]',
-        hoverBg: 'hover:bg-[#0A66C2]/10'
-    },
-    {
-        name: 'Twitter',
-        url: 'https://twitter.com/kennethribay',
-        icon: `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-               </svg>`,
-        color: 'text-[#1DA1F2]',
-        hoverBg: 'hover:bg-[#1DA1F2]/10'
-    },
-    {
-        name: 'Instagram',
-        url: 'https://instagram.com/kennethribay',
-        icon: `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
-               </svg>`,
-        color: 'text-[#E4405F]',
-        hoverBg: 'hover:bg-[#E4405F]/10'
-    },
-    {
-        name: 'YouTube',
-        url: 'https://youtube.com/@kennethribay',
-        icon: `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-               </svg>`,
-        color: 'text-[#FF0000]',
-        hoverBg: 'hover:bg-[#FF0000]/10'
+        url: 'https://linkedin.com/in/kennethjohnribay',
+        icon: 'linkedin'
     },
     {
         name: 'Facebook',
-        url: 'https://facebook.com/kennethribay',
-        icon: `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-               </svg>`,
-        color: 'text-[#1877F2]',
-        hoverBg: 'hover:bg-[#1877F2]/10'
+        url: 'https://facebook.com/kennethjohn.ribay',
+        icon: 'facebook'
     }
 ];
 
-const form = ref({
-    name: '',
-    email: '',
-    message: ''
-});
-
-const handleSubmit = (e: Event) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', form.value);
+const getContactIcon = (iconType: string) => {
+    const icons: Record<string, string> = {
+        email: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`,
+        phone: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>`,
+        location: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`
+    };
+    return icons[iconType] || '';
 };
+
+const getSocialIcon = (iconType: string) => {
+    const icons: Record<string, string> = {
+        github: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path></svg>`,
+        linkedin: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path></svg>`,
+        facebook: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clip-rule="evenodd"></path></svg>`
+    };
+    return icons[iconType] || '';
+};
+
+const submitForm = async () => {
+    isSubmitting.value = true;
+    submitStatus.value = null;
+
+    try {
+        // Simulate form submission
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Reset form
+        form.value = {
+            firstName: '',
+            lastName: '',
+            email: '',
+            subject: '',
+            message: ''
+        };
+
+        submitStatus.value = 'success';
+    } catch (error) {
+        submitStatus.value = 'error';
+    } finally {
+        isSubmitting.value = false;
+
+        // Clear status after 5 seconds
+        setTimeout(() => {
+            submitStatus.value = null;
+        }, 5000);
+    }
+};
+
+// Setup scroll-triggered animations
+useScrollAnimation([
+    {
+        selector: '.contact-header',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8 }
+    },
+    {
+        selector: '.contact-form',
+        animation: { opacity: 1, x: 0 },
+        options: { duration: 0.8, delay: 0.2 }
+    },
+    {
+        selector: '.contact-info',
+        animation: { opacity: 1, x: 0 },
+        options: { duration: 0.8, delay: 0.4 }
+    },
+    {
+        selector: '.contact-info-card',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6 },
+        staggerDelay: 0.1
+    },
+    {
+        selector: '.contact-social',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8, delay: 0.6 }
+    }
+]);
 </script>
 
 <template>
-    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+    <section id="contact" class="py-12 sm:py-16 lg:py-20 bg-slate-950 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                    Get in Touch
+            <div class="contact-header text-center mb-12 sm:mb-16 lg:mb-20 opacity-0 transform translate-y-[30px]">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
+                    Get In <span class="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Touch</span>
                 </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                    Feel free to reach out for collaborations or just a friendly hello
+                <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto">
+                    Let's discuss your next project or just say hello!
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <!-- Contact Information -->
-                <div class="space-y-8">
-                    <!-- Contact Cards -->
-                    <div v-for="info in contactInfo" :key="info.label"
-                         class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 transform hover:scale-105 transition-all duration-300">
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0">
-                                <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center text-primary-600 dark:text-primary-400"
-                                     v-html="info.icon">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
+                <!-- Contact Form -->
+                <div class="contact-form order-2 lg:order-1 opacity-0 transform translate-x-[-50px]">
+                    <div class="bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl sm:rounded-2xl lg:rounded-3xl p-6 sm:p-8 lg:p-10">
+                        <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-6 sm:mb-8">
+                            Send me a message
+                        </h3>
+
+                        <form @submit.prevent="submitForm" class="space-y-4 sm:space-y-6">
+                            <!-- Name Fields -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <div>
+                                    <label for="firstName" class="block text-sm sm:text-base md:text-lg font-medium text-gray-300 mb-2 sm:mb-3">
+                                        First Name
+                                    </label>
+                                    <input
+                                        id="firstName"
+                                        v-model="form.firstName"
+                                        type="text"
+                                        required
+                                        class="w-full px-4 sm:px-6 py-3 sm:py-4 bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 text-sm sm:text-base"
+                                        placeholder="Your first name"
+                                    />
+                                </div>
+                                <div>
+                                    <label for="lastName" class="block text-sm sm:text-base md:text-lg font-medium text-gray-300 mb-2 sm:mb-3">
+                                        Last Name
+                                    </label>
+                                    <input
+                                        id="lastName"
+                                        v-model="form.lastName"
+                                        type="text"
+                                        required
+                                        class="w-full px-4 sm:px-6 py-3 sm:py-4 bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 text-sm sm:text-base"
+                                        placeholder="Your last name"
+                                    />
                                 </div>
                             </div>
+
+                            <!-- Email -->
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                                    {{ info.label }}
-                                </h3>
-                                <p v-if="info.link" class="text-gray-700 dark:text-gray-300">
-                                    <a :href="info.link" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                                        {{ info.value }}
-                                    </a>
+                                <label for="email" class="block text-sm sm:text-base md:text-lg font-medium text-gray-300 mb-2 sm:mb-3">
+                                    Email Address
+                                </label>
+                                <input
+                                    id="email"
+                                    v-model="form.email"
+                                    type="email"
+                                    required
+                                    class="w-full px-4 sm:px-6 py-3 sm:py-4 bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 text-sm sm:text-base"
+                                    placeholder="your.email@example.com"
+                                />
+                            </div>
+
+                            <!-- Subject -->
+                            <div>
+                                <label for="subject" class="block text-sm sm:text-base md:text-lg font-medium text-gray-300 mb-2 sm:mb-3">
+                                    Subject
+                                </label>
+                                <input
+                                    id="subject"
+                                    v-model="form.subject"
+                                    type="text"
+                                    required
+                                    class="w-full px-4 sm:px-6 py-3 sm:py-4 bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 text-sm sm:text-base"
+                                    placeholder="What's this about?"
+                                />
+                            </div>
+
+                            <!-- Message -->
+                            <div>
+                                <label for="message" class="block text-sm sm:text-base md:text-lg font-medium text-gray-300 mb-2 sm:mb-3">
+                                    Message
+                                </label>
+                                <textarea
+                                    id="message"
+                                    v-model="form.message"
+                                    rows="5"
+                                    required
+                                    class="w-full px-4 sm:px-6 py-3 sm:py-4 bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 resize-none text-sm sm:text-base"
+                                    placeholder="Tell me about your project..."
+                                ></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button
+                                type="submit"
+                                :disabled="isSubmitting"
+                                class="w-full flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-semibold hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 text-sm sm:text-base lg:text-lg"
+                            >
+                                <span v-if="!isSubmitting">Send Message</span>
+                                <span v-else>Sending...</span>
+                                <svg v-if="!isSubmitting" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                                <div v-else class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            </button>
+
+                            <!-- Status Messages -->
+                            <div v-if="submitStatus" class="text-center">
+                                <p v-if="submitStatus === 'success'" class="text-green-400 text-sm sm:text-base">
+                                    Message sent successfully! I'll get back to you soon.
                                 </p>
-                                <p v-else class="text-gray-700 dark:text-gray-300">
-                                    {{ info.value }}
+                                <p v-else-if="submitStatus === 'error'" class="text-red-400 text-sm sm:text-base">
+                                    Something went wrong. Please try again.
                                 </p>
                             </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="contact-info order-1 lg:order-2 space-y-6 sm:space-y-8 lg:space-y-10 opacity-0 transform translate-x-[50px]">
+                    <!-- Contact Information -->
+                    <div class="space-y-4 sm:space-y-6">
+                        <h3 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white">
+                            Contact Information
+                        </h3>
+                        <p class="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 leading-relaxed">
+                            Ready to bring your ideas to life? Let's connect and discuss how we can work together.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4 sm:space-y-6">
+                        <div
+                            v-for="(info, index) in contactInfo"
+                            :key="info.title"
+                            class="contact-info-card group bg-slate-900/30 backdrop-blur border border-slate-800/50 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:bg-slate-900/50 hover:border-cyan-500/50 transition-all duration-300 opacity-0 transform translate-y-[20px]"
+                        >
+                            <a :href="info.href" class="flex items-center gap-3 sm:gap-4 md:gap-6">
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <div class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-cyan-400" v-html="getContactIcon(info.icon)"></div>
+                                </div>
+                                <div>
+                                    <h4 class="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white group-hover:text-cyan-400 transition-colors duration-300">
+                                        {{ info.title }}
+                                    </h4>
+                                    <p class="text-xs sm:text-sm md:text-base lg:text-lg text-gray-400">{{ info.value }}</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
 
                     <!-- Social Links -->
-                    <div class="pt-6">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                            Connect with me
-                        </h3>
-                        <div class="flex flex-wrap gap-4">
-                            <a v-for="social in socialLinks"
-                               :key="social.name"
-                               :href="social.url"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               :class="['p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300', social.color, social.hoverBg]"
-                               :title="social.name"
-                               v-html="social.icon">
+                    <div class="contact-social space-y-4 sm:space-y-6 opacity-0 transform translate-y-[30px]">
+                        <h4 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white">Follow me</h4>
+                        <div class="flex gap-3 sm:gap-4 md:gap-6">
+                            <a
+                                v-for="social in socialLinks"
+                                :key="social.name"
+                                :href="social.url"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center bg-slate-800/50 border border-slate-700 rounded-lg sm:rounded-xl lg:rounded-2xl hover:border-cyan-500/50 hover:bg-slate-700/50 transition-all duration-300 hover:scale-110"
+                                :title="social.name"
+                            >
+                                <div class="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-10 lg:h-10 text-gray-300 hover:text-cyan-400 transition-colors duration-300" v-html="getSocialIcon(social.icon)"></div>
                             </a>
                         </div>
                     </div>
-                </div>
-
-                <!-- Contact Form -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
-                    <form @submit="handleSubmit" class="space-y-6">
-                        <div>
-                            <label for="name" class="block text-base font-medium text-gray-900 dark:text-white mb-2">
-                                Name
-                            </label>
-                            <input type="text"
-                                   id="name"
-                                   v-model="form.name"
-                                   class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                   placeholder="Your name"
-                                   required>
-                        </div>
-                        <div>
-                            <label for="email" class="block text-base font-medium text-gray-900 dark:text-white mb-2">
-                                Email
-                            </label>
-                            <input type="email"
-                                   id="email"
-                                   v-model="form.email"
-                                   class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                                   placeholder="your.email@example.com"
-                                   required>
-                        </div>
-                        <div>
-                            <label for="message" class="block text-base font-medium text-gray-900 dark:text-white mb-2">
-                                Message
-                            </label>
-                            <textarea id="message"
-                                      v-model="form.message"
-                                      rows="4"
-                                      class="block w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
-                                      placeholder="Your message here..."
-                                      required></textarea>
-                        </div>
-                        <button type="submit"
-                                class="w-full px-6 py-3.5 text-base font-medium text-white bg-gray-900 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-white rounded-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transform hover:scale-[1.02] transition-all duration-300">
-                            Send Message
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

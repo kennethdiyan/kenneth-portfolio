@@ -1,253 +1,254 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useScrollAnimation } from '@/composables/useScrollAnimation';
 
-const roles = ['Web Developer', 'Laravel Developer', 'Vue.js Developer', 'Full Stack Developer'];
-const currentRole = ref(roles[0]);
-let roleIndex = 0;
+const currentRole = ref('');
+const roles = [
+    'Full Stack Developer',
+    'Laravel Specialist',
+    'Vue.js Developer',
+    'Web Developer'
+];
 
 const stats = [
-    { label: 'Years Experience', value: '1+' },
-    { label: 'Projects Completed', value: '20+' },
-    { label: 'Happy Clients', value: '15+' },
-    { label: 'Technologies', value: '10+' }
+    { value: '1+', label: 'Years' },
+    { value: '10+', label: 'Projects' },
+    { value: '3+', label: 'Technologies' },
+    { value: '100%', label: 'Dedication' }
 ];
-
-const technologies = [
-    { name: 'Laravel', color: 'from-red-500 to-pink-500' },
-    { name: 'Vue.js', color: 'from-emerald-500 to-green-500' },
-    { name: 'Tailwind', color: 'from-cyan-500 to-blue-500' },
-    { name: 'MySQL', color: 'from-orange-500 to-amber-500' }
-];
-
-onMounted(() => {
-    setInterval(() => {
-        roleIndex = (roleIndex + 1) % roles.length;
-        currentRole.value = roles[roleIndex];
-    }, 3000);
-});
 
 const socialLinks = [
     {
         name: 'GitHub',
-        url: 'https://github.com/yourusername',
-        icon: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path>
-              </svg>`,
+        url: 'https://github.com/kennethjohnribay',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>`
     },
     {
         name: 'LinkedIn',
-        url: 'https://linkedin.com/in/yourusername',
-        icon: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd"></path>
-              </svg>`,
+        url: 'https://linkedin.com/in/kennethjohnribay',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>`
     },
     {
-        name: 'Email',
-        url: 'mailto:kennethjohnribay@gmail.com',
-        icon: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>`,
+        name: 'Facebook',
+        url: 'https://facebook.com/kennethjohn.ribay',
+        icon: `<svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>`
     }
 ];
+
+const typeRole = (role: string) => {
+    currentRole.value = '';
+    let i = 0;
+    const timer = setInterval(() => {
+        currentRole.value += role[i];
+        i++;
+        if (i === role.length) {
+            clearInterval(timer);
+        }
+    }, 100);
+};
+
+// Setup scroll-triggered animations
+useScrollAnimation([
+    {
+        selector: '.hero-content',
+        animation: { opacity: 1, x: 0 },
+        options: { duration: 0.8 }
+    },
+    {
+        selector: '.hero-terminal',
+        animation: { opacity: 1, x: 0 },
+        options: { duration: 1, delay: 0.2 }
+    },
+    {
+        selector: '.hero-greeting',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6, delay: 0.1 }
+    },
+    {
+        selector: '.hero-title',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8, delay: 0.2 }
+    },
+    {
+        selector: '.hero-role',
+        animation: { opacity: 1 },
+        options: { duration: 1, delay: 0.4 }
+    },
+    {
+        selector: '.hero-description',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6, delay: 0.5 }
+    },
+    {
+        selector: '.hero-stats',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8, delay: 0.6 }
+    },
+    {
+        selector: '.hero-buttons',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.6, delay: 0.7 }
+    },
+    {
+        selector: '.hero-social',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8, delay: 0.8 }
+    },
+    {
+        selector: '.hero-scroll',
+        animation: { opacity: 1, y: 0 },
+        options: { duration: 0.8, delay: 1 }
+    }
+]);
+
+onMounted(() => {
+    let currentIndex = 0;
+    typeRole(roles[currentIndex]);
+
+    setInterval(() => {
+        currentIndex = (currentIndex + 1) % roles.length;
+        typeRole(roles[currentIndex]);
+    }, 3000);
+});
 </script>
 
 <template>
-    <section class="relative min-h-screen flex items-center py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <!-- Background Elements -->
-        <div class="absolute inset-0 bg-gradient-to-br from-white via-purple-50/50 to-indigo-50/50 dark:from-gray-900 dark:via-purple-900/5 dark:to-indigo-900/5"></div>
+    <section class="min-h-screen relative flex items-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(120,119,198,0.3),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(255,119,198,0.3),transparent_50%)]"></div>
 
-        <!-- Animated Shapes -->
-        <div class="absolute inset-0">
-            <!-- Gradient Circles -->
-            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-200/30 dark:bg-purple-900/20 rounded-full mix-blend-multiply dark:mix-blend-soft-light blur-3xl animate-blob"></div>
-            <div class="absolute top-1/3 right-1/3 w-96 h-96 bg-indigo-200/30 dark:bg-indigo-900/20 rounded-full mix-blend-multiply dark:mix-blend-soft-light blur-3xl animate-blob animation-delay-2000"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-200/30 dark:bg-pink-900/20 rounded-full mix-blend-multiply dark:mix-blend-soft-light blur-3xl animate-blob animation-delay-4000"></div>
-        </div>
+        <div class="relative w-full max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-16 items-center">
+                <!-- Content Section -->
+                <div class="hero-content lg:col-span-7 order-2 lg:order-1 opacity-0 transform translate-x-[-50px]">
+                    <div class="space-y-6 sm:space-y-8 lg:space-y-10 text-center lg:text-left">
+                        <div class="space-y-3 sm:space-y-4 lg:space-y-6">
+                            <div class="hero-greeting text-cyan-400 text-xs sm:text-sm md:text-base lg:text-lg font-mono tracking-wider opacity-0 transform translate-y-[20px]">
+                                {{ `< Hello World />` }}
+                            </div>
 
-        <!-- Floating Technology Pills -->
-        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div v-for="(tech, index) in technologies" :key="tech.name"
-                 :class="`absolute bg-gradient-to-r ${tech.color} p-2 px-4 rounded-full text-white text-sm font-medium opacity-80 shadow-lg transform animate-float-${index}`"
-                 :style="`top: ${20 + index * 15}%; left: ${10 + index * 20}%`">
-                {{ tech.name }}
-            </div>
-        </div>
-
-        <!-- Grid Pattern -->
-        <div class="absolute inset-0 bg-grid-gray-100 dark:bg-grid-gray-800 opacity-[0.1]"></div>
-
-        <!-- Content Container -->
-        <div class="relative max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <!-- Text Content -->
-                <div class="space-y-8 text-center lg:text-left">
-                    <!-- Greeting with Animated Underline -->
-                    <div class="space-y-2">
-                        <h2 class="text-2xl font-medium text-indigo-600 dark:text-indigo-400 relative inline-block">
-                            Hello, I'm Kenneth John
-                            <div class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 transform scale-x-0 animate-expand"></div>
-                        </h2>
-                        <div class="relative h-20">
-                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white">
-                                <span class="inline-block">I'm a</span>
-                                <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 ml-2">
-                                    {{ currentRole }}
-                                </span>
+                            <h1 class="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight opacity-0 transform translate-y-[30px]">
+                                <span class="block text-white">Kenneth John</span>
+                                <span class="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">C. Ribay</span>
                             </h1>
-                        </div>
-                    </div>
 
-                    <!-- Description with Highlight -->
-                    <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto lg:mx-0 relative">
-                        <span class="relative">
+                            <div class="hero-role h-8 sm:h-10 md:h-12 lg:h-14 opacity-0">
+                                <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 font-mono">
+                                    <span class="text-cyan-400">></span> {{ currentRole }}
+                                    <span class="animate-pulse text-cyan-400">_</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <p class="hero-description text-sm sm:text-base md:text-lg lg:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed text-gray-400 opacity-0 transform translate-y-[20px]">
                             Passionate about creating efficient and user-friendly web applications.
-                            <span class="absolute -bottom-1 left-0 w-full h-0.5 bg-indigo-200 dark:bg-indigo-800"></span>
-                        </span>
-                        <br>
-                        Specialized in Laravel, Vue.js, and modern web technologies.
-                    </p>
+                            Specialized in Laravel, Vue.js, and modern web technologies.
+                        </p>
 
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-6">
-                        <div v-for="stat in stats" :key="stat.label"
-                             class="p-4 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700 transform hover:scale-105 transition-transform duration-300">
-                            <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{ stat.value }}</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">{{ stat.label }}</div>
+                        <div class="hero-stats grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 opacity-0 transform translate-y-[30px]">
+                            <div v-for="stat in stats" :key="stat.label"
+                                 class="p-3 sm:p-4 md:p-5 lg:p-6 bg-slate-900/50 backdrop-blur border border-slate-800 rounded-xl sm:rounded-2xl hover:border-cyan-500/50 transition-all duration-300">
+                                <div class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-cyan-400">{{ stat.value }}</div>
+                                <div class="text-xs sm:text-sm md:text-base text-gray-400 mt-1">{{ stat.label }}</div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- CTA Buttons with Enhanced Styling -->
-                    <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
-                        <a href="#contact"
-                           class="group inline-flex items-center px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg">
-                            <span>Get in Touch</span>
-                            <svg class="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform"
-                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                            </svg>
-                        </a>
-                        <a href="#portfolio"
-                           class="group inline-flex items-center px-6 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-700 hover:border-indigo-600 dark:hover:border-indigo-500 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 transform hover:translate-y-[-2px] hover:shadow-lg">
-                            <span>View Portfolio</span>
-                            <svg class="w-5 h-5 ml-2 opacity-0 group-hover:opacity-100 transform translate-x-[-10px] group-hover:translate-x-0 transition-all"
-                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
-                    </div>
-
-                    <!-- Social Links with Enhanced Hover Effects -->
-                    <div class="flex items-center gap-6 justify-center lg:justify-start">
-                        <span class="text-sm text-gray-500 dark:text-gray-400">Follow me:</span>
-                        <div class="flex gap-6">
-                            <a v-for="link in socialLinks"
-                               :key="link.name"
-                               :href="link.url"
-                               :title="link.name"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="group relative text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors duration-300">
-                                <span class="sr-only">{{ link.name }}</span>
-                                <div v-html="link.icon" class="transform group-hover:scale-110 transition-transform"></div>
-                                <div class="absolute -bottom-1 left-1/2 w-0 h-0.5 bg-indigo-600 group-hover:w-full transform -translate-x-1/2 transition-all duration-300"></div>
+                        <div class="hero-buttons flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start opacity-0 transform translate-y-[20px]">
+                            <a href="#contact"
+                               class="group px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full text-white font-semibold hover:from-cyan-400 hover:to-blue-500 transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-cyan-500/25 text-sm sm:text-base lg:text-lg">
+                                <span class="flex items-center justify-center gap-2">
+                                    Let's Talk
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                            <a href="#projects"
+                               class="px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 border border-slate-700 rounded-full text-white font-semibold hover:border-cyan-500 hover:bg-slate-900/50 transition-all duration-300 text-sm sm:text-base lg:text-lg">
+                                View Projects
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Code Editor Section -->
-                <div class="relative">
-                    <div class="relative max-w-lg mx-auto transform hover:scale-[1.02] transition-transform duration-300">
-                        <!-- Code Window -->
-                        <div class="relative rounded-xl overflow-hidden bg-gray-900 dark:bg-gray-800 shadow-2xl">
-                            <!-- Window Header -->
-                            <div class="flex items-center justify-start px-4 py-2 bg-gray-800 dark:bg-gray-700">
-                                <div class="flex space-x-2">
-                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                <!-- Terminal Section -->
+                <div class="hero-terminal lg:col-span-5 order-1 lg:order-2 opacity-0 transform translate-x-[50px]">
+                    <div class="relative max-w-sm sm:max-w-md lg:max-w-lg mx-auto">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-600/20 rounded-2xl blur-2xl"></div>
+                            <div class="relative bg-slate-900/90 backdrop-blur border border-slate-700 rounded-2xl p-4 sm:p-6 lg:p-8 font-mono text-sm sm:text-base">
+                                <div class="flex items-center gap-2 mb-4 sm:mb-6">
+                                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full"></div>
+                                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded-full"></div>
+                                    <div class="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full"></div>
+                                    <span class="ml-auto text-gray-500 text-xs sm:text-sm">terminal</span>
                                 </div>
-                            </div>
 
-                            <!-- Code Content -->
-                            <div class="p-6 bg-[#1e1e1e]">
-                                <!-- Code Lines Container -->
-                                <div class="relative font-mono text-[13px]">
-                                    <!-- Line Numbers Column -->
-                                    <div class="absolute left-0 top-0 flex flex-col text-[#858585] select-none" style="line-height: 1.5rem;">
-                                        <span class="w-5 text-right opacity-50">1</span>
-                                        <span class="w-5 text-right opacity-50">2</span>
-                                        <span class="w-5 text-right opacity-50">3</span>
-                                        <span class="w-5 text-right opacity-50">4</span>
-                                        <span class="w-5 text-right opacity-50">5</span>
-                                        <span class="w-5 text-right opacity-50">6</span>
-                                        <span class="w-5 text-right opacity-50">7</span>
+                                <div class="space-y-2 sm:space-y-3 text-gray-300">
+                                    <div class="flex items-center">
+                                        <span class="text-green-400">kenneth@portfolio</span>
+                                        <span class="text-white">:</span>
+                                        <span class="text-blue-400">~</span>
+                                        <span class="text-white">$ </span>
+                                        <span class="ml-1">whoami</span>
                                     </div>
+                                    <div class="text-cyan-400">Full Stack Developer</div>
 
-                                    <!-- Code Content -->
-                                    <div class="pl-7 space-y-0">
-                                        <!-- Line 1 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="text-[#569cd6]">class</span>
-                                            <span class="mx-1.5 text-[#4ec9b0]">Developer</span>
-                                            <span class="text-[#569cd6]">extends</span>
-                                            <span class="mx-1.5 text-[#4ec9b0]">Human</span>
-                                            <span class="text-white">{</span>
-                                        </div>
+                                    <div class="flex items-center">
+                                        <span class="text-green-400">kenneth@portfolio</span>
+                                        <span class="text-white">:</span>
+                                        <span class="text-blue-400">~</span>
+                                        <span class="text-white">$ </span>
+                                        <span class="ml-1">ls skills/</span>
+                                    </div>
+                                    <div class="text-purple-400">laravel/ vue.js/ tailwind/ mysql/</div>
 
-                                        <!-- Line 2 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="ml-8 text-[#9cdcfe]">skills</span>
-                                            <span class="mx-1.5 text-white">=</span>
-                                            <span class="text-[#ce9178]">['Laravel', 'Vue.js', 'Tailwind']</span>
-                                        </div>
+                                    <div class="flex items-center">
+                                        <span class="text-green-400">kenneth@portfolio</span>
+                                        <span class="text-white">:</span>
+                                        <span class="text-blue-400">~</span>
+                                        <span class="text-white">$ </span>
+                                        <span class="ml-1">cat motivation.txt</span>
+                                    </div>
+                                    <div class="text-yellow-400">Building amazing web experiences</div>
 
-                                        <!-- Line 3 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="ml-8 text-[#9cdcfe]">passion</span>
-                                            <span class="mx-1.5 text-white">=</span>
-                                            <span class="text-[#ce9178]">'Creating Amazing Web Apps'</span>
-                                        </div>
-
-                                        <!-- Line 4 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="ml-8 text-[#569cd6]">constructor</span>
-                                            <span class="text-white">() {</span>
-                                        </div>
-
-                                        <!-- Line 5 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="ml-16 text-[#569cd6]">this</span>
-                                            <span class="text-white">.</span>
-                                            <span class="text-[#9cdcfe]">code</span>
-                                            <span class="mx-1.5 text-white">=</span>
-                                            <span class="text-[#ce9178]">'24/7'</span>
-                                        </div>
-
-                                        <!-- Line 6 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="ml-8 text-white">}</span>
-                                        </div>
-
-                                        <!-- Line 7 -->
-                                        <div class="flex items-center h-6">
-                                            <span class="text-white">}</span>
-                                        </div>
+                                    <div class="flex items-center mt-2 sm:mt-4">
+                                        <span class="text-green-400">kenneth@portfolio</span>
+                                        <span class="text-white">:</span>
+                                        <span class="text-blue-400">~</span>
+                                        <span class="text-white">$ </span>
+                                        <span class="ml-1 animate-pulse">_</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Decorative Elements -->
-                        <div class="absolute -bottom-2 -right-2 w-28 h-28 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full opacity-20 blur-lg"></div>
-                        <div class="absolute -top-2 -left-2 w-28 h-28 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full opacity-20 blur-lg"></div>
-
-                        <!-- Floating Elements -->
-                        <div class="absolute -right-8 top-1/4 w-16 h-16 bg-purple-500 rounded-xl rotate-12 animate-float opacity-50"></div>
-                        <div class="absolute -left-8 bottom-1/4 w-16 h-16 bg-indigo-500 rounded-xl -rotate-12 animate-float-delay opacity-50"></div>
+                        <div class="hero-social flex justify-center mt-6 sm:mt-8 lg:mt-10 space-x-4 sm:space-x-6 opacity-0 transform translate-y-[20px]">
+                            <a v-for="social in socialLinks"
+                               :key="social.name"
+                               :href="social.url"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center bg-slate-800/50 border border-slate-700 rounded-xl sm:rounded-2xl text-gray-400 hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-slate-700/50 transition-all duration-300"
+                               v-html="social.icon">
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="hero-scroll absolute bottom-6 sm:bottom-8 lg:bottom-12 left-1/2 transform -translate-x-1/2 hidden lg:flex flex-col items-center space-y-2 opacity-0 translate-y-[20px]">
+            <span class="text-gray-400 text-sm">scroll down</span>
+            <svg class="w-5 h-5 text-cyan-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
         </div>
     </section>
 </template>
