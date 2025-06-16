@@ -222,7 +222,7 @@ useScrollAnimation([
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                         <div class="journey-card bg-slate-900/50 backdrop-blur border border-slate-800 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:border-cyan-500/50 transition-all duration-300 group opacity-0 transform translate-y-[20px]">
-                            <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">2022</div>
+                            <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-cyan-400 mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300">2019</div>
                             <div class="text-sm sm:text-base md:text-lg text-white font-semibold mb-1 sm:mb-2">Started Journey</div>
                             <div class="text-xs sm:text-sm md:text-base text-gray-400">Began learning web development</div>
                         </div>

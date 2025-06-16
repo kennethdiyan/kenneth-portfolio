@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, reactive, watch } from 'vue';
 import { useScrollAnimation } from '@/composables/useScrollAnimation';
 
 interface ContactInfo {
@@ -13,97 +13,195 @@ interface ContactInfo {
     sort_order: number;
 }
 
+interface SocialLink {
+    name: string;
+    url: string;
+    icon: string;
+}
+
 const props = defineProps<{
     contactInfo: ContactInfo[];
+    socialLinks: SocialLink[];
 }>();
 
-const form = ref({
+// Form state management
+const form = reactive({
     firstName: '',
     lastName: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    phone: '',
+    company: ''
+});
+
+const formErrors = reactive({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: '',
+    message: '',
+    phone: ''
 });
 
 const isSubmitting = ref(false);
 const submitStatus = ref<'success' | 'error' | null>(null);
+const focusedField = ref<string>('');
+
+// Validation rules
+const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
+const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phone === '' || phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+};
+
+// Real-time validation
+const validateField = (field: string, value: string) => {
+    switch (field) {
+        case 'firstName':
+            formErrors.firstName = value.length < 2 ? 'First name must be at least 2 characters' : '';
+            break;
+        case 'lastName':
+            formErrors.lastName = value.length < 2 ? 'Last name must be at least 2 characters' : '';
+            break;
+        case 'email':
+            if (!value) {
+                formErrors.email = 'Email is required';
+            } else if (!validateEmail(value)) {
+                formErrors.email = 'Please enter a valid email address';
+            } else {
+                formErrors.email = '';
+            }
+            break;
+        case 'subject':
+            formErrors.subject = value.length < 5 ? 'Subject must be at least 5 characters' : '';
+            break;
+        case 'message':
+            formErrors.message = value.length < 10 ? 'Message must be at least 10 characters' : '';
+            break;
+        case 'phone':
+            formErrors.phone = value && !validatePhone(value) ? 'Please enter a valid phone number' : '';
+            break;
+    }
+};
+
+// Watch form fields for validation
+Object.keys(form).forEach(field => {
+    watch(() => form[field as keyof typeof form], (newValue) => {
+        validateField(field, newValue);
+    });
+});
+
+// Form validation state
+const isFormValid = computed(() => {
+    return form.firstName &&
+           form.lastName &&
+           form.email &&
+           form.subject &&
+           form.message &&
+           !formErrors.firstName &&
+           !formErrors.lastName &&
+           !formErrors.email &&
+           !formErrors.subject &&
+           !formErrors.message &&
+           !formErrors.phone;
+});
 
 // Filter and sort active contact info
 const activeContactInfo = computed(() => {
+    if (!props.contactInfo || props.contactInfo.length === 0) {
+        // Return default contact info if none provided
+        return [
+            {
+                id: 1,
+                type: 'email',
+                label: 'Email',
+                value: 'kenneth@example.com',
+                href: 'mailto:kenneth@example.com',
+                icon: 'email',
+                is_active: true,
+                sort_order: 1
+            },
+            {
+                id: 2,
+                type: 'phone',
+                label: 'Phone',
+                value: '+1 (555) 123-4567',
+                href: 'tel:+15551234567',
+                icon: 'phone',
+                is_active: true,
+                sort_order: 2
+            },
+            {
+                id: 3,
+                type: 'location',
+                label: 'Location',
+                value: 'Your City, Country',
+                href: '#',
+                icon: 'location',
+                is_active: true,
+                sort_order: 3
+            }
+        ];
+    }
+
     return props.contactInfo
-        .filter(contact => contact.is_active)
+        .filter(contact => contact.is_active === true || contact.is_active === 1)
         .sort((a, b) => a.sort_order - b.sort_order);
 });
 
-const socialLinks = [
-    {
-        name: 'GitHub',
-        url: 'https://github.com/kennethjohnribay',
-        icon: 'github'
-    },
-    {
-        name: 'LinkedIn',
-        url: 'https://linkedin.com/in/kennethjohnribay',
-        icon: 'linkedin'
-    },
-    {
-        name: 'Facebook',
-        url: 'https://facebook.com/kennethjohn.ribay',
-        icon: 'facebook'
-    }
-];
-
-const getContactIcon = (iconType: string) => {
-    const icons: Record<string, string> = {
-        email: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`,
-        phone: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>`,
-        location: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`,
-        envelope: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`,
-        'map-pin': `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`,
-        globe: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.559-.499-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.559.499.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.497-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd"></path></svg>`,
-        user: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>`,
-        home: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>`,
-        briefcase: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2zm4-1a1 1 0 00-1 1v1h2V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`
-    };
-    return icons[iconType] || icons.envelope;
-};
+const socialLinks = computed(() => {
+    return props.socialLinks;
+});
 
 const getSocialIcon = (iconType: string) => {
     const icons: Record<string, string> = {
         github: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clip-rule="evenodd"></path></svg>`,
         linkedin: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"></path></svg>`,
-        facebook: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clip-rule="evenodd"></path></svg>`
+        facebook: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z" clip-rule="evenodd"></path></svg>`,
+        email: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>`,
+        phone: `<svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path></svg>`,
+        location: `<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>`
     };
-    return icons[iconType] || '';
+    return icons[iconType] || icons.email;
 };
 
+// Submit form handler
 const submitForm = async () => {
+    if (!isFormValid.value || isSubmitting.value) return;
+
     isSubmitting.value = true;
-    submitStatus.value = null;
 
     try {
         // Simulate form submission
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Reset form
-        form.value = {
-            firstName: '',
-            lastName: '',
-            email: '',
-            subject: '',
-            message: ''
-        };
+        // Here you would typically send the form data to your backend
+        console.log('Form submitted:', form);
 
         submitStatus.value = 'success';
-    } catch (error) {
-        submitStatus.value = 'error';
-    } finally {
-        isSubmitting.value = false;
 
-        // Clear status after 5 seconds
+        // Reset form after successful submission
+        setTimeout(() => {
+            Object.keys(form).forEach(key => {
+                form[key as keyof typeof form] = '';
+            });
+            submitStatus.value = null;
+        }, 3000);
+
+    } catch (error) {
+        console.error('Form submission error:', error);
+        submitStatus.value = 'error';
+
         setTimeout(() => {
             submitStatus.value = null;
         }, 5000);
+    } finally {
+        isSubmitting.value = false;
     }
 };
 
@@ -242,7 +340,7 @@ useScrollAnimation([
                             >
                                 <span v-if="!isSubmitting">Send Message</span>
                                 <span v-else>Sending...</span>
-                                <svg v-if="!isSubmitting" class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg v-if="!isSubmitting" class="w-4 h-4 sm:w-5 sm:h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                                 </svg>
                                 <div v-else class="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -275,13 +373,13 @@ useScrollAnimation([
 
                     <div class="space-y-4 sm:space-y-6">
                         <div
-                            v-for="(info, index) in activeContactInfo"
+                            v-for="info in activeContactInfo"
                             :key="info.label"
                             class="contact-info-card group bg-slate-900/30 backdrop-blur border border-slate-800/50 rounded-lg sm:rounded-xl lg:rounded-2xl p-4 sm:p-6 md:p-8 hover:bg-slate-900/50 hover:border-cyan-500/50 transition-all duration-300 opacity-0 transform translate-y-[20px]"
                         >
                             <a :href="info.href" class="flex items-center gap-3 sm:gap-4 md:gap-6">
                                 <div class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-gradient-to-br from-cyan-500/20 to-blue-600/20 rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <div class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-cyan-400" v-html="getContactIcon(info.icon)"></div>
+                                    <div class="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-cyan-400" v-html="getSocialIcon(info.icon)"></div>
                                 </div>
                                 <div>
                                     <h4 class="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-white group-hover:text-cyan-400 transition-colors duration-300">

@@ -10,6 +10,7 @@ import Education from '@/components/Portfolio/Education.vue';
 import Contact from '@/components/Portfolio/Contact.vue';
 import Footer from '@/components/Portfolio/Footer.vue';
 
+
 interface PersonalInfo {
     id: number;
     label: string;
@@ -122,13 +123,13 @@ defineProps<{
 
     <div class="bg-slate-950 text-white overflow-hidden">
         <Navigation />
-        <Hero :personalInfo="personalInfo" />
+        <Hero :personalInfo="personalInfo" :socialLinks="socialLinks" :projects="projects" :skills="skills" />
         <About :personalInfo="personalInfo" :contactInfo="contactInfo" />
         <Skills :skills="skills" />
         <Projects :projects="projects" />
         <Experience :experiences="experiences" />
         <Education :educations="educations" />
-        <Contact :contactInfo="contactInfo" />
+        <Contact :contactInfo="contactInfo" :socialLinks="socialLinks" />
         <Footer :socialLinks="socialLinks" />
     </div>
 </template>
