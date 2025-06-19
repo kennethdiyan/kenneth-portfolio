@@ -1,0 +1,46 @@
+# Laravel specific ignores
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+/bootstrap/cache/*
+
+# Specified cache directories
+public/DProjectskenneth-portfoliostorageframeworkviews
+public/DProjectskenneth-portfoliostoragelogs
+
+# Environment and config files
+.env
+.env.*
+!.env.example
+
+# Dependencies
+/node_modules
+/vendor
+
+# Development files
+.git
+.gitignore
+README.md
+docker-compose*.yml
+Dockerfile*
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+/tests
+phpunit.xml
+.phpunit.result.cache
+
+# Build artifacts
+/public/hot
+/public/storage
+/public/build
